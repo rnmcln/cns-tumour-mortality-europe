@@ -213,11 +213,47 @@ def fig2():
 
 
 # --------------------------------------------------------------------------------------------- figure 3
-FIG3_LABELS = {  # label anchor (x, y in data units) and alignment for the countries labelled in panel A
-    'FR': (-19.3, 8.9, 'center'), 'IT': (-13.5, 8.6, 'center'), 'UK': (-9.2, 3.8, 'left'), 'ES': (-14.9, -0.4, 'right'),
-    'DE': (0.1, -9.9, 'center'), 'PL': (5.5, -12.6, 'right'), 'NL': (-7.3, -3.4, 'right'), 'DK': (-17.1, -12.0, 'center'),
-    'CZ': (1.5, -22.0, 'right'), 'RO': (-0.2, 6.9, 'center')}
 HALO = [matplotlib.patheffects.withStroke(linewidth=2.2, foreground='white')]
+
+
+def place_codes(fig, ax, r, sz):
+    """Label every country with its code, set directly against its own circle. Candidate positions around the
+    circle are tried in a fixed order, and the first whose box overlaps no other label, no other circle and no
+    panel annotation is used (largest countries first)."""
+    fig.canvas.draw()
+    rend = fig.canvas.get_renderer()
+    pts = ax.transData.transform(np.column_stack([r.bu_pct, r.mal_pct]))
+    rad = np.sqrt(np.asarray(sz) / np.pi) * fig.dpi / 72          # circle radius in pixels
+    pad = 1.0 * fig.dpi / 72
+    circles = [(x - q, y - q, x + q, y + q) for (x, y), q in zip(pts, rad)]
+    taken = [t.get_window_extent(rend).bounds for t in ax.texts]  # panel annotations
+    taken = [(x0, y0, x0 + w, y0 + h) for x0, y0, w, h in taken]
+    ab = ax.get_window_extent(rend)
+    def hit(b, boxes):
+        return any(b[0] < c[2] and b[2] > c[0] and b[1] < c[3] and b[3] > c[1] for c in boxes)
+    order = np.argsort(-np.asarray(r.COMP0))
+    for i in order:
+        g = r.geo.iloc[i]
+        (x, y), q = pts[i], rad[i] + pad
+        d = q * 0.72
+        cands = [(q, 0, 'left', 'center'), (-q, 0, 'right', 'center'), (0, q, 'center', 'bottom'),
+                 (0, -q, 'center', 'top'), (d, d, 'left', 'bottom'), (-d, d, 'right', 'bottom'),
+                 (d, -d, 'left', 'top'), (-d, -d, 'right', 'top')]
+        others = [c for j, c in enumerate(circles) if j != i]
+        chosen = None
+        for dx, dy, ha, va in cands:
+            t = ax.annotate(g, (r.bu_pct.iloc[i], r.mal_pct.iloc[i]), xytext=(dx * 72 / fig.dpi, dy * 72 / fig.dpi),
+                            textcoords='offset points', fontsize=6.3, color=BLACK, ha=ha, va=va, zorder=4,
+                            path_effects=HALO)
+            b0 = t.get_window_extent(rend)
+            b = (b0.x0 - 0.5, b0.y0 - 0.5, b0.x1 + 0.5, b0.y1 + 0.5)
+            inside = b[0] >= ab.x0 and b[2] <= ab.x1 and b[1] >= ab.y0 and b[3] <= ab.y1
+            if inside and not hit(b, others) and not hit(b, taken):
+                chosen = b
+                break
+            t.remove()
+        assert chosen is not None, f'no free label position for {g} in figure 3A'
+        taken.append(chosen)
 
 
 def fig3():
@@ -237,10 +273,9 @@ def fig3():
     w = r.COMP0
     xm, ym = np.average(r.bu_pct, weights=w), np.average(r.mal_pct, weights=w)
     ax.plot(xs, ym + sl * (xs - xm), color=ACCENT, lw=0.8, zorder=2)
-    ax.text(11.8, ym + sl * (11.8 - xm) - 2.6, f'Weighted regression,\nslope {num(sl, 2)}', color=ACCENT,
-            fontsize=6.3, ha='right', va='top', path_effects=HALO)
-    for g, (lx, ly, ha) in FIG3_LABELS.items():
-        ax.text(lx, ly, NAMES[g], fontsize=6.3, color=BLACK, ha=ha, va='center', path_effects=HALO, zorder=4)
+    ax.text(-27.2, -19.0, f'Weighted regression,\nslope {num(sl, 2)}', color=ACCENT,
+            fontsize=6.3, ha='left', va='center', path_effects=HALO)
+    place_codes(fig, ax, r, sz)
     ax.axhline(0, color=FAINT, lw=0.5, zorder=0)
     ax.axvline(0, color=FAINT, lw=0.5, zorder=0)
     ax.set_xlim(-28, 12)
