@@ -216,44 +216,72 @@ def fig2():
 HALO = [matplotlib.patheffects.withStroke(linewidth=2.2, foreground='white')]
 
 
-def place_codes(fig, ax, r, sz):
-    """Label every country with its code, set directly against its own circle. Candidate positions around the
-    circle are tried in a fixed order, and the first whose box overlaps no other label, no other circle and no
-    panel annotation is used (largest countries first)."""
+def place_codes(fig, ax, r, sz, lines):
+    """Label every country with its code, set directly against its own circle. For each country, candidate
+    positions around the circle (twelve directions, then the same directions slightly further out) are tried in
+    order; a position is accepted if its box overlaps no other label, no other circle, no panel annotation and
+    neither reference line. Countries are placed largest first; a country that cannot be placed is moved to the
+    front of the order and the placement is repeated."""
     fig.canvas.draw()
     rend = fig.canvas.get_renderer()
     pts = ax.transData.transform(np.column_stack([r.bu_pct, r.mal_pct]))
-    rad = np.sqrt(np.asarray(sz) / np.pi) * fig.dpi / 72          # circle radius in pixels
-    pad = 1.0 * fig.dpi / 72
+    pt = fig.dpi / 72
+    rad = np.sqrt(np.asarray(sz) / np.pi) * pt                      # circle radius in pixels
     circles = [(x - q, y - q, x + q, y + q) for (x, y), q in zip(pts, rad)]
-    taken = [t.get_window_extent(rend).bounds for t in ax.texts]  # panel annotations
-    taken = [(x0, y0, x0 + w, y0 + h) for x0, y0, w, h in taken]
+    fixed = [(b.x0, b.y0, b.x1, b.y1) for b in (t.get_window_extent(rend) for t in ax.texts)]
     ab = ax.get_window_extent(rend)
+    lpts = []                                                       # dense points along the reference lines
+    for ln in lines:
+        x, y = ln.get_data()
+        tt = np.linspace(0, 1, 2000)
+        lpts.append(ax.transData.transform(np.column_stack([x[0] + tt * (x[-1] - x[0]), y[0] + tt * (y[-1] - y[0])])))
+    lpts = np.vstack(lpts)
+
     def hit(b, boxes):
         return any(b[0] < c[2] and b[2] > c[0] and b[1] < c[3] and b[3] > c[1] for c in boxes)
-    order = np.argsort(-np.asarray(r.COMP0))
-    for i in order:
-        g = r.geo.iloc[i]
-        (x, y), q = pts[i], rad[i] + pad
-        d = q * 0.72
-        cands = [(q, 0, 'left', 'center'), (-q, 0, 'right', 'center'), (0, q, 'center', 'bottom'),
-                 (0, -q, 'center', 'top'), (d, d, 'left', 'bottom'), (-d, d, 'right', 'bottom'),
-                 (d, -d, 'left', 'top'), (-d, -d, 'right', 'top')]
+
+    def on_line(b):
+        m = 0.8 * pt
+        return bool(((lpts[:, 0] > b[0] - m) & (lpts[:, 0] < b[2] + m) &
+                     (lpts[:, 1] > b[1] - m) & (lpts[:, 1] < b[3] + m)).any())
+
+    angles = [0, 180, 90, 270, 30, 150, 330, 210, 60, 120, 300, 240]
+
+    def try_place(i, taken):
         others = [c for j, c in enumerate(circles) if j != i]
-        chosen = None
-        for dx, dy, ha, va in cands:
-            t = ax.annotate(g, (r.bu_pct.iloc[i], r.mal_pct.iloc[i]), xytext=(dx * 72 / fig.dpi, dy * 72 / fig.dpi),
-                            textcoords='offset points', fontsize=6.3, color=BLACK, ha=ha, va=va, zorder=4,
-                            path_effects=HALO)
-            b0 = t.get_window_extent(rend)
-            b = (b0.x0 - 0.5, b0.y0 - 0.5, b0.x1 + 0.5, b0.y1 + 0.5)
-            inside = b[0] >= ab.x0 and b[2] <= ab.x1 and b[1] >= ab.y0 and b[3] <= ab.y1
-            if inside and not hit(b, others) and not hit(b, taken):
-                chosen = b
+        for extra in (1.0, 2.5):
+            q = rad[i] + extra * pt
+            for a in angles:
+                ca, sa = np.cos(np.radians(a)), np.sin(np.radians(a))
+                ha = 'left' if ca > 0.3 else 'right' if ca < -0.3 else 'center'
+                va = 'bottom' if sa > 0.3 else 'top' if sa < -0.3 else 'center'
+                t = ax.annotate(r.geo.iloc[i], (r.bu_pct.iloc[i], r.mal_pct.iloc[i]), xytext=(q * ca / pt, q * sa / pt),
+                                textcoords='offset points', fontsize=6.3, color=BLACK, ha=ha, va=va, zorder=4)
+                e = t.get_window_extent(rend)
+                b = (e.x0 - 0.5, e.y0 - 0.5, e.x1 + 0.5, e.y1 + 0.5)
+                inside = b[0] >= ab.x0 and b[2] <= ab.x1 and b[1] >= ab.y0 and b[3] <= ab.y1
+                if inside and not hit(b, others) and not hit(b, taken) and not on_line(b):
+                    return t, b
+                t.remove()
+        return None
+
+    order = list(np.argsort(-np.asarray(r.COMP0)))
+    for _ in range(len(order)):
+        taken, placed, failed = list(fixed), [], None
+        for i in order:
+            res = try_place(i, taken)
+            if res is None:
+                failed = i
                 break
+            placed.append(res[0])
+            taken.append(res[1])
+        if failed is None:
+            return
+        for t in placed:
             t.remove()
-        assert chosen is not None, f'no free label position for {g} in figure 3A'
-        taken.append(chosen)
+        order.remove(failed)
+        order.insert(0, failed)
+    raise AssertionError(f'no free label positions for all countries in figure 3A ({r.geo.iloc[failed]})')
 
 
 def fig3():
@@ -267,15 +295,15 @@ def fig3():
     sz = 4 + 70 * r.COMP0 / r.COMP0.max()
     ax.scatter(r.bu_pct, r.mal_pct, s=sz, facecolor='white', edgecolor=DARK, lw=0.6, zorder=3)
     xs = np.array([-28.0, 12.0])
-    ax.plot(xs, -xs, color=MID, lw=0.6, ls=(0, (3, 2)), zorder=1)
-    ax.text(-14.3, 14.6, 'Slope ' + MINUS + '1', color=MID, fontsize=6.3, ha='left', va='center', path_effects=HALO)
+    l_unit = ax.plot(xs, -xs, color=MID, lw=0.6, ls=(0, (3, 2)), zorder=1)[0]
+    ax.text(-13.0, 14.6, 'Slope ' + MINUS + '1', color=MID, fontsize=6.3, ha='left', va='center', path_effects=HALO)
     sl = bd[bd.estimate.str.startswith('regression')].iloc[0].slope
     w = r.COMP0
     xm, ym = np.average(r.bu_pct, weights=w), np.average(r.mal_pct, weights=w)
-    ax.plot(xs, ym + sl * (xs - xm), color=ACCENT, lw=0.8, zorder=2)
+    l_reg = ax.plot(xs, ym + sl * (xs - xm), color=ACCENT, lw=0.8, zorder=2)[0]
     ax.text(-27.2, -19.0, f'Weighted regression,\nslope {num(sl, 2)}', color=ACCENT,
             fontsize=6.3, ha='left', va='center', path_effects=HALO)
-    place_codes(fig, ax, r, sz)
+    place_codes(fig, ax, r, sz, [l_unit, l_reg])
     ax.axhline(0, color=FAINT, lw=0.5, zorder=0)
     ax.axvline(0, color=FAINT, lw=0.5, zorder=0)
     ax.set_xlim(-28, 12)
