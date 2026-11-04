@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite it as below."
-title: "Tumour behaviour coding, population ageing and central nervous system tumour mortality in 26 European countries, 2003–22: analysis code"
-version: 1.0.1
+title: "Sensitivity of central nervous system tumour mortality estimates to tumour-behaviour coding, and the contribution of population ageing, in 26 European countries, 2003–22: analysis code"
+version: 1.1.0
 date-released: 2026-11-04
 license: MIT
 repository-code: "https://github.com/rnmcln/cns-tumour-mortality-europe"

@@ -1,4 +1,4 @@
-# Tumour behaviour coding, population ageing and central nervous system tumour mortality in 26 European countries, 2003–22: a population-based study
+# Sensitivity of central nervous system tumour mortality estimates to tumour-behaviour coding, and the contribution of population ageing, in 26 European countries, 2003–22: a population-based study
 
 Analysis code and documentation for the study of the same title.
 
@@ -17,11 +17,11 @@ All authors have both affiliations.
 
 ## Summary
 
-European statistics on central nervous system (CNS) tumour mortality count malignant codes (ICD-10 C70–C72) only. Deaths certified as CNS tumours of benign or uncertain behaviour (D32–D33, D42–D43) are excluded, and their share depends on certification practice. The study assessed how this definition affects trends and country comparisons, and the contribution of population ageing.
+Widely used European statistics on central nervous system (CNS) tumour mortality are based on the malignant codes of ICD-10 (C70–C72). Deaths assigned codes for benign or uncertain-behaviour CNS tumours (D32–D33, D42–D43) fall outside this category, and the distribution of deaths between these code groups can vary with the diagnostic information available at death and with certification and coding practice. The study examined how mortality trends and country comparisons differ when the code groups are considered separately and combined, and quantified the contribution of population ageing.
 
-Using WHO vital registration data for 26 countries, age-standardised mortality (2013 European Standard Population) and country ranks were compared for malignant codes and for all CNS tumour codes. The change in malignant deaths between 2003–05 and 2020–22 was decomposed into population size, age structure, change in all-CNS mortality and a non-malignant component. Projection models were evaluated out of sample, and registry data from England and Belgium were compared with the mortality data.
+Using WHO vital registration data for 26 countries, age-standardised mortality (2013 European Standard Population) and country ranks were compared for malignant codes and for a combined CNS-code outcome (C70–C72, D32–D33, D42–D43). The change in malignant deaths between 2003–05 and 2020–22 was decomposed into population size, age structure, change in combined-code mortality and a behaviour-code component. Projection models were evaluated out of sample, and registry data from England and Belgium were compared with the mortality data.
 
-Age-standardised mortality from all CNS tumours fell from 8.92 to 8.32 per 100,000, whereas malignant mortality was unchanged (6.69 and 6.64). Country ranks on the two definitions correlated moderately (Spearman 0.59). Malignant deaths increased from 28,767 to 34,547 per year; population ageing and growth contributed +6,278. A decline in deaths with non-malignant codes, mainly brain tumours of uncertain behaviour, added +2,622, of which about 1,690 (95% interval 860 to 2,240) was matched by higher malignant mortality. Projected malignant deaths in 2040 ranged from 39,365 to 42,114 across scenarios.
+Age-standardised combined-code mortality fell from 8.92 to 8.32 per 100,000, whereas malignant mortality was unchanged (6.69 and 6.64). Country ranks for the two outcomes correlated moderately (Spearman 0.59). Malignant deaths increased from 28,767 to 34,547 per year; population ageing and growth contributed +6,278. The decomposition attributed +2,622 deaths per year to the decline in benign/uncertain-coded mortality. Inverse changes in malignant and benign/uncertain-coded mortality across countries were compatible with partial reclassification; under this interpretation, the regression estimate was 1,690 deaths per year (95% interval 860 to 2,240). Scenario estimates of malignant deaths in 2040 ranged from 39,365 to 42,114.
 
 All numbers above are produced by the code in this repository; the tables that contain them are listed under [Outputs](#outputs).
 
@@ -89,9 +89,9 @@ The pipeline writes tables to `output/tables/`, model objects to `output/models/
 | Table | Content |
 |---|---|
 | `asr_by_period_setL.csv` | age-standardised rates by period, primary country set |
-| `comparison_country_ranks.csv`, `comparison_rank_summary.csv`, `comparison_trend_direction.csv` | country ranks and trends on malignant and all CNS tumour codes |
+| `comparison_country_ranks.csv`, `comparison_rank_summary.csv`, `comparison_trend_direction.csv` | country ranks and trends on malignant and combined CNS tumour codes |
 | `decomp_primary.csv`, `decomp_primary_bootstrap.csv` | primary decomposition |
-| `coding_evidence_*.csv` | non-malignant component and the estimate of transfer to malignant codes |
+| `coding_evidence_*.csv` | behaviour-code component and transfer-compatible estimates |
 | `trend_*.csv` | trend models and out-of-sample evaluation |
 | `projections_aggregate.csv`, `projections_country.csv`, `backtest_*.csv` | projections to 2040 and projection backtests |
 | `registry_england_*.csv`, `registry_belgium_*.csv` | registry comparisons |

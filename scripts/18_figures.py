@@ -3,15 +3,15 @@
 Design: one style for all figures. Inter (sans-serif), 7 pt text, thin axes without boxes or gridlines, greyscale
 with one muted accent colour, direct labelling instead of legends, point estimates with 95% intervals where
 available. Encoding used throughout:
-  all CNS tumour codes (C70-C72, D32-D33, D42-D43)   black, solid
+  combined codes (C70-C72, D32-D33, D42-D43)        black, solid
   malignant codes (C70-C72)                           grey, solid
-  non-malignant codes, D43 in particular              accent (muted rust)
+  benign/uncertain codes, D43 in particular          accent (muted rust)
 Lancet number style (midline decimal point, minus sign) in all text and tick labels.
 
 Main figures
   Figure 1  components of the change in malignant deaths (Europe); age-standardised rates by definition
   Figure 2  country ranks on both definitions, 2020-22; change in age-standardised rates by country
-  Figure 3  the non-malignant component: countries, subcodes, registry comparisons (England, Belgium)
+  Figure 3  the behaviour-code component: countries, subcodes, registry comparisons (England, Belgium)
   Figure 4  observed and projected deaths
 Supplementary figures S1-S7 (ratios, back-test errors, observed/expected 2020-23, D43 in four countries,
 regions, chained components, components by country).
@@ -43,8 +43,8 @@ plt.rcParams.update({
     'lines.linewidth': 0.75, 'lines.markersize': 3, 'axes.spines.top': False, 'axes.spines.right': False,
     'axes.grid': False, 'legend.frameon': False, 'axes.unicode_minus': True,
     'pdf.fonttype': 42, 'svg.fonttype': 'none', 'svg.hashsalt': 'paper3', 'savefig.dpi': 600})
-OUT = {'COMP': ('All CNS tumours', BLACK), 'MAL': ('Malignant (C70–C72)', MID),
-       'BU': ('Non-malignant (D32–D33, D42–D43)', ACCENT)}
+OUT = {'COMP': ('Combined codes', BLACK), 'MAL': ('Malignant (C70–C72)', MID),
+       'BU': ('Benign/uncertain (D32–D33, D42–D43)', ACCENT)}
 
 
 def lancet(s):
@@ -121,8 +121,8 @@ def fig1():
     m, c, cod = d.loc[('Europe', 'MAL')], d.loc[('Europe', 'COMP')], d.loc[('Europe', 'CODING')]
     rows = [('Population size', m.population_size, b.loc[('Europe', 'MAL', 'population_size')], DARK),
             ('Age–sex structure', m.age_sex_structure, b.loc[('Europe', 'MAL', 'age_sex_structure')], DARK),
-            ('All-CNS mortality', c.rates, b.loc[('Europe', 'COMP', 'rates')], DARK),
-            ('Non-malignant component', cod.rates, b.loc[('Europe', 'CODING', 'rates')], ACCENT),
+            ('Combined-code mortality', c.rates, b.loc[('Europe', 'COMP', 'rates')], DARK),
+            ('Behaviour-code component', cod.rates, b.loc[('Europe', 'CODING', 'rates')], ACCENT),
             ('Total change', m.deaths_1 - m.deaths_0, b.loc[('Europe', 'MAL', 'change')], BLACK)]
     assert abs(sum(r[1] for r in rows[:4]) - rows[4][1]) < 1
     fig = plt.figure(figsize=(170 * MM, 58 * MM))
@@ -151,7 +151,7 @@ def fig1():
     for o in ['COMP', 'MAL', 'BU']:
         lab, col = OUT[o]
         ax.plot(eu.index, eu[f'{o}_asr'], color=col, lw=0.9)
-        items.append((eu[f'{o}_asr'].iloc[-1], {'COMP': 'All CNS', 'MAL': 'Malignant', 'BU': 'Non-malignant'}[o], col))
+        items.append((eu[f'{o}_asr'].iloc[-1], {'COMP': 'Combined codes', 'MAL': 'Malignant', 'BU': 'Benign/uncertain'}[o], col))
     end_labels(ax, eu.index.max(), items, gap=0.55)
     ax.set_ylim(0, 10)
     tick_fmt(ax, 'y')
@@ -164,7 +164,7 @@ def fig1():
 
 # --------------------------------------------------------------------------------------------- figure 2
 def fig2():
-    """A: country ranks by malignant and all-CNS age-standardised rates, 2020-22; B: change in both rates."""
+    """A: country ranks by malignant and combined-code age-standardised rates, 2020-22; B: change in both rates."""
     r = pd.read_csv(T / 'comparison_country_ranks.csv')
     r = r[r.period == 1]
     tr = pd.read_csv(T / 'comparison_trend_direction.csv')
@@ -182,7 +182,7 @@ def fig2():
     ax.set_ylim(n + 0.6, 0.4)
     ax.set_xlim(0, 1)
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(['Malignant', 'All CNS'], fontsize=6.5)
+    ax.set_xticklabels(['Malignant', 'Combined codes'], fontsize=6.5)
     ax.xaxis.tick_top()
     ax.set_yticks([])
     for sp in ['left', 'bottom', 'top', 'right']:
@@ -205,7 +205,7 @@ def fig2():
     ax.spines['left'].set_visible(False)
     t0 = tr.iloc[0]
     ax.text(t0.pct_MAL, -0.95, 'Malignant', color=MID, fontsize=6.3, ha='center', va='bottom')
-    ax.text(t0.pct_COMP, -0.95, 'All CNS', color=BLACK, fontsize=6.3, ha='center', va='bottom')
+    ax.text(t0.pct_COMP, -0.95, 'Combined codes', color=BLACK, fontsize=6.3, ha='center', va='bottom')
     ax.xaxis.set_major_formatter(mt.FuncFormatter(lambda v, _: num(v, 0)))
     ax.set_xlabel('Change in age-standardised rate, 2003–05 to 2020–22 (%)')
     panel_label(ax, 'B', -0.36, 1.0)
@@ -246,7 +246,7 @@ def fig3():
     ax.set_xlim(-28, 12)
     ax.set_ylim(-25, 16)
     tick_fmt(ax, 'x'); tick_fmt(ax, 'y')
-    ax.set_xlabel('Non-malignant rate component (% of 2003–05 CNS tumour deaths)')
+    ax.set_xlabel('Benign/uncertain-coded rate component (% of 2003–05 CNS tumour deaths)')
     ax.set_ylabel('Malignant rate component (%)')
     panel_label(ax, 'A', -0.2)
     # B: subcodes
@@ -362,7 +362,7 @@ def fig4():
         years_axis(ax, [2005, 2020, 2035])
         ax.yaxis.set_major_locator(mt.MultipleLocator(5))
         tick_fmt(ax, 'y')
-        ax.set_ylabel({'MAL': 'Malignant deaths per year (thousands)', 'COMP': 'All CNS tumour deaths per year (thousands)'}[o])
+        ax.set_ylabel({'MAL': 'Malignant deaths per year (thousands)', 'COMP': 'Combined-code deaths per year (thousands)'}[o])
     ax = axs[2]
     t = a[(a.geo == 'Set L') & (a.outcome == 'MAL') & (a.variant == 'BSL')]
     items = []
@@ -416,7 +416,7 @@ def figS1():
     ax.tick_params(axis='y', length=0)
     ax.spines['left'].set_visible(False)
     tick_fmt(ax, 'x')
-    ax.set_xlabel('Non-malignant CNS tumour deaths per malignant death')
+    ax.set_xlabel('Benign/uncertain-coded deaths per malignant death')
     save(fig, 'figS1_ratio')
 
 
@@ -442,7 +442,7 @@ def figS2():
         ax.set_xticks(range(len(models)))
         ax.set_xticklabels(names, fontsize=6.3)
         ax.tick_params(axis='x', length=0)
-        facet_title(ax, {'MAL': 'Malignant deaths', 'COMP': 'All CNS tumour deaths'}[o])
+        facet_title(ax, {'MAL': 'Malignant deaths', 'COMP': 'Combined-code deaths'}[o])
     hi = max(np.percentile(b[(b.outcome == o) & (b.model == m) & (b.horizon == h)].ape, 75)
              for o in ['MAL', 'COMP'] for m in models for h in [5, 10]
              if len(b[(b.outcome == o) & (b.model == m) & (b.horizon == h)]))
@@ -463,7 +463,7 @@ def figS3():
         lab, col = OUT[o]
         ax.vlines(x, t.pi_lo / t.expected, t.pi_hi / t.expected, color=LIGHT if o != 'BU' else ACCENT_LIGHT, lw=2.4)
         ax.plot(x, t.ratio, 'o', color=col, ms=3, mfc=col if o != 'MAL' else 'white', mew=0.7)
-        items.append((t.ratio.iloc[-1], {'COMP': 'All CNS', 'MAL': 'Malignant', 'BU': 'Non-malignant'}[o], col))
+        items.append((t.ratio.iloc[-1], {'COMP': 'Combined codes', 'MAL': 'Malignant', 'BU': 'Benign/uncertain'}[o], col))
     ax.axhline(1, color=LIGHT, lw=0.5, zorder=0)
     end_labels(ax, oe.year.max() + 0.16, items, gap=0.018, dx=0.15)
     years_axis(ax, [2020, 2021, 2022, 2023])
@@ -475,7 +475,7 @@ def figS3():
 
 def figS4():
     """Age-standardised rates of C70-C72, D43 and D32 deaths, 2003-2022, in the four countries with the
-    largest non-malignant components (ordered by the size of the component)."""
+    largest behaviour-code components (ordered by the size of the component)."""
     from lib.data import load_panel, collapse, asr
     d = pd.read_csv(T / 'decomp_primary.csv')
     cod = d[(d.outcome == 'CODING') & (d.geo.str.len() == 2)].set_index('geo').rates.sort_values(ascending=False)
@@ -516,7 +516,7 @@ def figS5():
         for o in ['COMP', 'MAL', 'BU']:
             lab, col = OUT[o]
             ax.plot(t.index, t[f'{o}_asr'], color=col, lw=0.8)
-            items.append((t[f'{o}_asr'].iloc[-1], {'COMP': 'All CNS', 'MAL': 'Malignant', 'BU': 'Non-malignant'}[o], col))
+            items.append((t[f'{o}_asr'].iloc[-1], {'COMP': 'Combined codes', 'MAL': 'Malignant', 'BU': 'Benign/uncertain'}[o], col))
         if k == 3:
             end_labels(ax, t.index.max(), items, gap=0.7, dx=0.6, fs=6)
         facet_title(ax, rg)
@@ -540,7 +540,7 @@ def figS6():
         t = e[e.outcome == o].set_index('year').sort_index()
         comps = [('population_size', DARK, (0, (1, 1.2)), 'Population size'),
                  ('age_sex_structure', DARK, (0, (4, 1.5)), 'Age–sex structure'),
-                 ('rates', MID, '-', 'Malignant mortality' if o == 'MAL' else 'All-CNS mortality')]
+                 ('rates', MID, '-', 'Malignant mortality' if o == 'MAL' else 'Combined-code mortality')]
         items = []
         for k, col, ls, lab in comps:
             ax.plot(t.index, t[k], color=col, ls=ls, lw=0.8)
@@ -548,7 +548,7 @@ def figS6():
         if o == 'MAL':
             cod = e[e.outcome == 'CODING'].set_index('year').sort_index().rates
             ax.plot(cod.index, cod, color=ACCENT, lw=0.8)
-            items.append((cod.iloc[-1], 'Non-malignant component', ACCENT))
+            items.append((cod.iloc[-1], 'Behaviour-code component', ACCENT))
         tot = t[['population_size', 'age_sex_structure', 'rates']].sum(axis=1)
         ax.plot(t.index, tot, color=BLACK, lw=1.0)
         items.append((tot.iloc[-1], 'Total change', BLACK))
@@ -587,7 +587,7 @@ def figS7():
     eu = tab.loc[['Europe']]
     tab = pd.concat([eu, tab.drop('Europe').sort_values('total', ascending=False)])
     cols = [('size', 'Population\nsize', DARK), ('structure', 'Age–sex\nstructure', DARK),
-            ('residual', 'All-CNS\nmortality', DARK), ('coding', 'Non-malignant\ncomponent', ACCENT), ('total', 'Total\nchange', BLACK)]
+            ('residual', 'Combined-code\nmortality', DARK), ('coding', 'Behaviour-code\ncomponent', ACCENT), ('total', 'Total\nchange', BLACK)]
     fig, axs = plt.subplots(1, 5, figsize=(170 * MM, 120 * MM), sharey=True, gridspec_kw={'wspace': 0.18})
     y = np.arange(len(tab)).astype(float)
     y[1:] += 0.8
