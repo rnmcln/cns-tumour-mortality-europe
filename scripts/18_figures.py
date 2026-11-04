@@ -377,7 +377,7 @@ def fig3():
     years_axis(ax, [2009, 2011, 2013, 2015, 2017])
     ax.set_ylabel('Coded to unspecified site (%)')
     panel_label(ax, 'D', -0.38)
-    save(fig, 'fig3_nonmalignant')
+    save(fig, 'fig3_behaviour_code')
 
 
 # --------------------------------------------------------------------------------------------- figure 4
