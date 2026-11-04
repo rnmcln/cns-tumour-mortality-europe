@@ -1,0 +1,9 @@
+# R 4.3 (4.3.3 used for the published analysis)
+glmmTMB 1.1.8
+TMB 1.9.10
+Matrix 1.6.5
+MASS 7.3.60.0.1
+INLA 26.8.7    # install from https://www.r-inla.org
+BAPC 0.0.37    # install from https://r-forge.r-project.org/projects/bapc/
+# System tools: pdftotext (poppler-utils 24.02) for step 17f
+# Optional: the Inter font for figures (DejaVu Sans is used if Inter is not installed)

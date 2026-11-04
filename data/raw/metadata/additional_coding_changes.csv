@@ -1,0 +1,3 @@
+geo,year,from,to,source,note
+UK,2014.0,previous coding system,Iris,ONS 2014 (England and Wales),"Office for National Statistics: implementation of IRIS software for ICD-10 cause-of-death coding, England and Wales, deaths registered from 2014; UK not covered by the Eurostat metadata"
+DE,,national coding with gradual introduction of Iris/MUSE by federal states,Iris/MUSE,Eckert 2019,gradual introduction of Iris/MUSE by German federal states; about half of death certificates processed electronically by 2019 (Eckert 2019); no single change year

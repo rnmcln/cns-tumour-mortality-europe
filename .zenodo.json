@@ -1,0 +1,41 @@
+{
+  "title": "Tumour behaviour coding, population ageing and central nervous system tumour mortality in 26 European countries, 2003–22: analysis code",
+  "upload_type": "software",
+  "description": "<p>Analysis code and documentation for the study \"Tumour behaviour coding, population ageing and central nervous system tumour mortality in 26 European countries, 2003–22: a population-based study\".</p><p>The pipeline (Python and R) reconstructs the analysis from published aggregate data: WHO Mortality Database, Eurostat, UN World Population Prospects 2024, Office for National Statistics (England) and the Belgian Cancer Registry. It compares CNS tumour mortality on malignant codes (ICD-10 C70–C72) and on all CNS tumour codes (adding D32–D33 and D42–D43), decomposes the change in deaths between 2003–05 and 2020–22, evaluates projection models out of sample and projects deaths to 2040. Source data are not included; data/README.md describes how to obtain them, with checksums of the files used.</p><p>Study protocol: doi:10.5281/zenodo.23797629.</p>",
+  "creators": [
+    {
+      "name": "Lawson McLean, Aaron",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany",
+      "orcid": "0000-0001-5528-6905"
+    },
+    {
+      "name": "Kahr, Julian",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+    },
+    {
+      "name": "Neumeister, Anne",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+    },
+    {
+      "name": "Senft, Christian",
+      "affiliation": "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "central nervous system tumours",
+    "brain tumours",
+    "mortality",
+    "death certification",
+    "decomposition",
+    "projections",
+    "Europe"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.23797629",
+      "relation": "references",
+      "scheme": "doi"
+    }
+  ]
+}

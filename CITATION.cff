@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "Tumour behaviour coding, population ageing and central nervous system tumour mortality in 26 European countries, 2003–22: analysis code"
+version: 1.0.0
+date-released: 2026-11-04
+license: MIT
+repository-code: "https://github.com/rnmcln/cns-tumour-mortality-europe"
+authors:
+  - family-names: Lawson McLean
+    given-names: Aaron
+    orcid: "https://orcid.org/0000-0001-5528-6905"
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+    email: aaron.lawsonmclean@med.uni-jena.de
+  - family-names: Kahr
+    given-names: Julian
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+  - family-names: Neumeister
+    given-names: Anne
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+  - family-names: Senft
+    given-names: Christian
+    affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+keywords:
+  - central nervous system tumours
+  - brain tumours
+  - mortality
+  - death certification
+  - decomposition
+  - projections
+  - Europe
+references:
+  - type: report
+    title: "Demographic change, death certification and recorded mortality from central nervous system tumours in Europe: study protocol for a decomposition of change since 2003 and projections to 2040"
+    authors:
+      - family-names: Lawson McLean
+        given-names: Aaron
+    version: "1.0"
+    doi: 10.5281/zenodo.23797629

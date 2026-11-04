@@ -1,0 +1,13 @@
+# third-party source data are not redistributed; see data/README.md
+data/raw/*
+!data/raw/metadata/
+data/raw/metadata/*
+!data/raw/metadata/additional_coding_changes.csv
+data/interim/
+data/processed/
+output/
+pilot/
+__pycache__/
+*.pyc
+.DS_Store
+.Rhistory
