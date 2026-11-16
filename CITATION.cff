@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite it as below."
 title: "Sensitivity of central nervous system tumour mortality estimates to tumour-behaviour coding, and the contribution of population ageing, in 26 European countries, 2003–22: analysis code"
-version: 1.1.3
-date-released: 2026-11-16
+version: 1.1.4
+date-released: 2026-11-17
 license: MIT
 repository-code: "https://github.com/rnmcln/cns-tumour-mortality-europe"
 authors:
@@ -20,6 +20,9 @@ authors:
   - family-names: Senft
     given-names: Christian
     affiliation: "Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany; Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany"
+  - family-names: Kamp
+    given-names: Marcel A.
+    affiliation: "Centre for Palliative and Neuro-Palliative Care, Faculty of Health Sciences Brandenburg, Brandenburg Medical School Theodor Fontane, Rüdersdorf bei Berlin, Germany; Department for Palliative and Neuro-Palliative Care, Immanuel Clinic Rüdersdorf, Rüdersdorf bei Berlin, Germany"
 keywords:
   - central nervous system tumours
   - brain tumours

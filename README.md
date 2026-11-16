@@ -4,12 +4,12 @@ Analysis code and documentation for the study of the same title.
 
 **Authors**
 
-Aaron Lawson McLean (ORCID 0000-0001-5528-6905), Julian Kahr, Anne Neumeister, Christian Senft
+Aaron Lawson McLean (ORCID 0000-0001-5528-6905)<sup>1,2</sup>, Julian Kahr<sup>1,2</sup>, Anne Neumeister<sup>1,2</sup>, Christian Senft<sup>1,2</sup>, Marcel A. Kamp<sup>3,4</sup>
 
 1. Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Jena, Germany
 2. Comprehensive Cancer Centre Central Germany, Jena Campus, Jena, Germany
-
-All authors have both affiliations.
+3. Centre for Palliative and Neuro-Palliative Care, Faculty of Health Sciences Brandenburg, Brandenburg Medical School Theodor Fontane, Rüdersdorf bei Berlin, Germany
+4. Department for Palliative and Neuro-Palliative Care, Immanuel Clinic Rüdersdorf, Rüdersdorf bei Berlin, Germany
 
 **Correspondence:** Aaron Lawson McLean, Computational Neuro-Oncology and Health Intelligence Lab, Department of Neurosurgery, Jena University Hospital, Friedrich Schiller University Jena, Am Klinikum 1, 07747 Jena, Germany. aaron.lawsonmclean@med.uni-jena.de
 
