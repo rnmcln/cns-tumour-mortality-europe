@@ -21,6 +21,7 @@ python3 08_extract_who_detail.py
 python3 09_build_panel.py
 python3 10_coding_changes.py
 python3 11_decomposition.py
+python3 check_decomposition.py
 Rscript 12_trend_model.R
 for fe in 2010 2013 2016; do FIT_END=$fe Rscript 12_trend_model.R; done
 python3 13_rates_joinpoint.py

@@ -4,6 +4,8 @@ Outputs (output/tables):
   bu_by_country_period.csv      mean annual deaths of benign and uncertain-behaviour CNS tumours (D32, D33,
                                 D42, deviations table, entry 17) and of C70-C72, ratio BU/MAL, share at 75+ and 85+, Set L, 2003-2005,
                                 2011-2013 and 2020-2022
+  asr_by_period_setL.csv        Set L age-standardised rates (pooled deaths and person-years) for the same
+                                periods and for 2017-2019 (end period of sensitivity analysis S3)
   bu_by_age_sex.csv             Set L totals by broad age group, sex and period
   ratio_dispersion.csv          between-country distribution of the ratio BU/MAL by period
   cns_share_of_cancer.csv       MAL and COMP as a share of C00-C97 deaths by year (Set L)
@@ -23,6 +25,7 @@ from lib.decomp import decompose
 
 TAB = OUTPUT / 'tables'
 PERIODS = {'2003-2005': (2003, 2005), '2011-2013': (2011, 2013), '2020-2022': (2020, 2022)}
+PERIODS_ASR = {'2017-2019': (2017, 2019)}  # additional period for the age-standardised rates only
 BROAD = [(0, 39, '0-39'), (40, 64, '40-64'), (65, 74, '65-74'), (75, 84, '75-84'), (85, 200, '85+')]
 
 
@@ -61,8 +64,12 @@ def main():
         bu[f'asr_{o}'] = [asr(qa[(qa.geo == r.geo) & qa.year.between(*PERIODS[r.period])].groupby('age', as_index=False)[[o, 'pop']].sum(),
                               o, 'pop', grid) for r in bu.itertuples()]
     eu_rows = []
-    for lab, (a, b) in PERIODS.items():
-        full = bu[bu.period == lab].geo.tolist()
+    for lab, (a, b) in {**PERIODS, **PERIODS_ASR}.items():
+        if lab in PERIODS:
+            full = bu[bu.period == lab].geo.tolist()
+        else:                                    # end period of sensitivity analysis S3 (rates only)
+            ny_ = pl[pl.year.between(a, b)].groupby('geo').year.nunique()
+            full = [g for g in L if ny_.get(g, 0) == b - a + 1]
         t = qa[qa.geo.isin(full) & qa.year.between(a, b)].groupby('age', as_index=False)[['MAL', 'BU', 'COMP', 'pop']].sum()
         eu_rows.append({'period': lab, 'n_countries': len(full), **{f'asr_{o}': asr(t, o, 'pop', grid) for o in ['MAL', 'BU', 'COMP']}})
     pd.DataFrame(eu_rows).to_csv(TAB / 'asr_by_period_setL.csv', index=False)

@@ -21,7 +21,7 @@ Widely used European statistics on central nervous system (CNS) tumour mortality
 
 Using WHO vital registration data for 26 countries, age-standardised mortality (2013 European Standard Population) and country ranks were compared for malignant codes and for a combined CNS-code outcome (C70–C72, D32–D33, D42–D43). The change in malignant deaths between 2003–05 and 2020–22 was decomposed into population size, age structure, change in combined-code mortality and a behaviour-code component. Projection models were evaluated out of sample, and registry data from England and Belgium were compared with the mortality data.
 
-Age-standardised combined-code mortality fell from 8.92 to 8.32 per 100,000, whereas malignant mortality was unchanged (6.69 and 6.64). Country ranks for the two outcomes correlated moderately (Spearman 0.59). Malignant deaths increased from 28,767 to 34,547 per year; population ageing and growth contributed +6,278. The decomposition attributed +2,622 deaths per year to the decline in benign/uncertain-coded mortality. Inverse changes in malignant and benign/uncertain-coded mortality across countries were compatible with partial reclassification; under this interpretation, the regression estimate was 1,690 deaths per year (95% interval 860 to 2,240). Scenario estimates of malignant deaths in 2040 ranged from 39,365 to 42,114.
+Age-standardised combined-code mortality fell from 8.92 to 8.32 per 100,000, whereas malignant mortality was unchanged (6.69 and 6.64). Country ranks for the two outcomes correlated moderately (Spearman 0.59). Malignant deaths increased from 28,767 to 34,547 per year; population ageing and growth contributed +6,278. The decomposition attributed +2,622 deaths per year to the decline in benign/uncertain-coded mortality. Inverse changes in malignant and benign/uncertain-coded mortality across countries and age groups, compatible with partial reclassification between the code groups, amounted to 1,070 to 1,690 deaths per year (matched and regression estimates; 95% interval of the regression estimate 860 to 2,240). Scenario estimates of malignant deaths in 2040 ranged from 39,365 to 42,114.
 
 All numbers above are produced by the code in this repository; the tables that contain them are listed under [Outputs](#outputs).
 
@@ -45,7 +45,7 @@ No source data are included, because they are published by third parties under t
 
 ## Reproducing the analysis
 
-1. Install Python 3.11 or later with the packages in `requirements.txt`, and R 4.3 with the packages in `R_packages.txt` (INLA and BAPC are not on CRAN; see the links in that file). Step 17f needs `pdftotext` from poppler-utils.
+1. Install Python 3.13 with the package versions in `requirements.txt`, and R 4.3 with the packages in `R_packages.txt` (INLA and BAPC are not on CRAN; see the links in that file). Step 17f needs `pdftotext` from poppler-utils.
 2. Obtain the source data, either automatically:
 
    ```
@@ -75,6 +75,7 @@ A full run from the source files took about 21 minutes in a test on a single cor
 | 8–9 | `08_extract_who_detail.py`, `09_build_panel.py` | ICD-10 subcode detail; analysis panel |
 | 10 | `10_coding_changes.py` | documented coding changes per country |
 | 11 | `11_decomposition.py` | decomposition of the change in deaths (Das Gupta / Shapley), with bootstrap intervals |
+| 11b | `check_decomposition.py` | independent recomputation of the primary decomposition from the analysis panel, without the shared decomposition functions; stops if any component differs by 0.01 deaths or more |
 | 12 | `12_trend_model.R` | hierarchical negative binomial trend models (glmmTMB), with validation fits ending in 2010, 2013 and 2016 |
 | 13 | `13_rates_joinpoint.py` | age-standardised rates and joinpoint trends |
 | 14 | `14_population_projections.py` | population projections to 2040 |
@@ -88,7 +89,7 @@ The pipeline writes tables to `output/tables/`, model objects to `output/models/
 
 | Table | Content |
 |---|---|
-| `asr_by_period_setL.csv` | age-standardised rates by period, primary country set |
+| `asr_by_period_setL.csv` | age-standardised rates by period, primary country set (including 2017–2019, the end period of sensitivity analysis S3) |
 | `comparison_country_ranks.csv`, `comparison_rank_summary.csv`, `comparison_trend_direction.csv` | country ranks and trends on malignant and combined CNS tumour codes |
 | `decomp_primary.csv`, `decomp_primary_bootstrap.csv` | primary decomposition |
 | `coding_evidence_*.csv` | behaviour-code component and transfer-compatible estimates |
@@ -99,7 +100,8 @@ The pipeline writes tables to `output/tables/`, model objects to `output/models/
 ### Reproducibility notes
 
 - Random seeds are fixed in `scripts/config.py` and in the R scripts. Python and BLAS are run single-threaded (`run_all.sh`).
-- The R model fits are not bitwise reproducible between runs. Estimates from the glmmTMB trend models (step 12) differ from run to run in about the sixth significant digit, and the BAPC/INLA predictions (step 16) by a median of about one part in a million and at most about 0.5% in strata with few deaths. In a full re-run from the source files, all numbers in the main text of the paper were reproduced exactly; some simulated interval bounds and one summary of the Bayesian age-period-cohort backtest in the appendix differed in the last digit.
+- Simulated prediction intervals (step 15) are percentiles of 1,000 draws. Their bounds depend on the NumPy release: with NumPy 2.2.6 instead of 2.5.3, the 10-year coverage of the constant-rate model for malignant deaths was 71% instead of 67%, because in two of 42 evaluations the observed count equalled the simulated lower bound. Point predictions do not change. `requirements.txt` therefore pins the versions used.
+- The R model fits are not bitwise reproducible between runs. Estimates from the glmmTMB trend models (step 12) differ from run to run in about the sixth significant digit, and the BAPC/INLA predictions (step 16) by a median of about one part in a million and at most about 0.5% in strata with few deaths. In a full re-run from the source files with the pinned Python packages, all numbers in the main text of the paper were reproduced exactly; some simulated interval bounds and one summary of the Bayesian age-period-cohort backtest in the appendix differed in the last digit.
 - The analysis departs from the protocol in the respects listed in `protocol/deviations_published.csv`.
 
 ## Licence
