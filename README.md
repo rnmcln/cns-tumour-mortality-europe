@@ -1,4 +1,4 @@
-# Sensitivity of central nervous system tumour mortality estimates to tumour-behaviour coding, and the contribution of population ageing, in 26 European countries, 2003–22: a population-based study
+# European CNS tumour mortality trends and country rankings vary by tumour-behaviour coding: a population-based study of 26 countries, 2003–22
 
 Analysis code and documentation for the study of the same title.
 
